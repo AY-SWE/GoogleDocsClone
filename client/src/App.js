@@ -1,20 +1,20 @@
+import Editor from "./components/editor/Editor";
+import './App.css';
+/*
+    This is our application's top-level component.
+    
+    @author Andy Yang
+*/
+/*
+  This is the entry-point for our application. Many different home pages
+  
+  @author Andy Yang
+*/
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Editor/>
     </div>
   );
 }
