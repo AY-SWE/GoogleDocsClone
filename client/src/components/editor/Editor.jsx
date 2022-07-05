@@ -1,8 +1,9 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Box} from '@mui/material';
-import quill from 'quill';
+import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 import styled from '@emotion/styled';
+import {io} from "socket.io-client"
 
 const Component = styled.div`
     background: var(--containerGray); 
@@ -29,9 +30,35 @@ const toolbarOptions = [
   ];
 
 const Editor = () => {
+  const [socket, setSocket] = useState();
+  const [quill, setQuill] = useState();
     useEffect(()=>{
-        const quillServer = new quill('#container', {theme: "snow", modules:{toolbar: toolbarOptions}})    //documentation on quilljs.com
-    },[]);
+        const quillServer = new Quill('#container', {theme: "snow", modules:{toolbar: toolbarOptions}})    //documentation on quilljs.com
+        setQuill(quillServer);
+      },[]);
+
+    useEffect(() => {
+      const socketServer = io("http://localhost:9000");
+      setSocket(socketServer);
+      return() => {
+        socketServer.disconnect();
+      }
+  }, []);
+
+  useEffect(()=>{
+    if(socket === null || quill === null) 
+      return;
+    const handleChange = (delta, oldData, source)=> {  //quilljs textchange docu.
+        if(source !== 'user')
+          return;
+          socket && socket.emit("send-changes", delta); 
+    }
+
+    quill && quill.on("text-change", handleChange); 
+      return ()=> {
+        quill && quill.off("text-change", handleChange);
+      }
+  },[]);
 
   return (
     <Component>
