@@ -1,5 +1,7 @@
 import Editor from "./components/editor/Editor";
 import './App.css';
+import {Route, Routes, Navigate} from 'react-router-dom';
+import {v4 as uuid} from "uuid";    //generaters random unique id 
 /*
     This is our application's top-level component.
     
@@ -14,7 +16,10 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <Editor/>
+      <Routes>
+          <Route exact path="/" element={<Navigate replace to= {`/docs/${uuid()}`}/>} />  
+          <Route path="/docs/:id" element={<Editor/>}/>  
+      </Routes> 
     </div>
   );
 }

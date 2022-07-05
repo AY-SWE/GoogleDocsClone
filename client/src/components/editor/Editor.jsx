@@ -3,7 +3,8 @@ import {Box} from '@mui/material';
 import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 import styled from '@emotion/styled';
-import {io} from "socket.io-client"
+import {io} from "socket.io-client";
+import { useParams } from 'react-router-dom';
 
 const Component = styled.div`
     background: var(--containerGray); 
@@ -30,6 +31,7 @@ const toolbarOptions = [
   ];
 
 const Editor = () => {
+  const {id} = useParams();
   const [socket, setSocket] = useState();
   const [quill, setQuill] = useState();
     useEffect(()=>{
@@ -74,6 +76,12 @@ const Editor = () => {
         socket && socket.off("receive-changes", handleChange);
       }
   },[quill, socket]);
+
+  useEffect(()=>{
+    if(socket === null || quill === null) 
+      return;
+    socket && socket.emit("get-document", id);
+  },[quill,socket,id]);
 
   return (
     <Component>
