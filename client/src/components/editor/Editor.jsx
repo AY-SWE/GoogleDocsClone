@@ -45,6 +45,7 @@ const Editor = () => {
       }
   }, []);
 
+  //sending changes
   useEffect(()=>{
     if(socket === null || quill === null) 
       return;
@@ -58,7 +59,21 @@ const Editor = () => {
       return ()=> {
         quill && quill.off("text-change", handleChange);
       }
-  },[]);
+  },[quill, socket]);
+
+  //receiving changes
+  useEffect(()=>{
+    if(socket === null || quill === null) 
+      return;
+    const handleChange = (delta)=> {  //quilljs textchange docu.
+      quill.updateContents(delta);
+    }
+
+    socket && socket.on("receive-changes", handleChange); 
+      return ()=> {
+        socket && socket.off("receive-changes", handleChange);
+      }
+  },[quill, socket]);
 
   return (
     <Component>
