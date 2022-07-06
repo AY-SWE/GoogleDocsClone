@@ -36,6 +36,8 @@ const Editor = () => {
   const [quill, setQuill] = useState();
     useEffect(()=>{
         const quillServer = new Quill('#container', {theme: "snow", modules:{toolbar: toolbarOptions}})    //documentation on quilljs.com
+        quillServer.disable();
+        quillServer.setText("Begin typing in your document...");
         setQuill(quillServer);
       },[]);
 
@@ -54,7 +56,7 @@ const Editor = () => {
     const handleChange = (delta, oldData, source)=> {  //quilljs textchange docu.
         if(source !== 'user')
           return;
-          socket && socket.emit("send-changes", delta); 
+          socket && socket.emit("send-changes", delta);   //emit sends event to server
     }
 
     quill && quill.on("text-change", handleChange); 
@@ -71,7 +73,7 @@ const Editor = () => {
       quill.updateContents(delta);
     }
 
-    socket && socket.on("receive-changes", handleChange); 
+    socket && socket.on("receive-changes", handleChange);       //socket.on takes event form client
       return ()=> {
         socket && socket.off("receive-changes", handleChange);
       }
@@ -80,6 +82,10 @@ const Editor = () => {
   useEffect(()=>{
     if(socket === null || quill === null) 
       return;
+      socket && socket.once("load-document", document =>{
+        quill && quill.setContents(document);
+        quill && quill.enable();
+    })
     socket && socket.emit("get-document", id);
   },[quill,socket,id]);
 
